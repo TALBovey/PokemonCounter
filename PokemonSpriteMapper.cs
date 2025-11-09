@@ -10,7 +10,7 @@ namespace PokemonCounter
     {
         public static Dictionary<string, string> LoadPokemonSprites()
         {
-            string basePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\..\shiny");
+            string basePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "shiny");
 
             var pokemonFiles = new Dictionary<string, string>()
             {
