@@ -8,7 +8,7 @@ namespace PokemonCounter
 {
     public partial class Form1 : Form
     {
-        private Dictionary<string, string> _pokemonSpritePaths;
+        private Dictionary<string, Dictionary<string, string>> _pokemonSpritePaths;
         private int _encounterCount = 0;
         private Label _encountersValueLabel;
         private Label _oddsValueLabel;
@@ -18,6 +18,21 @@ namespace PokemonCounter
         private Keys addKey = Keys.Space;
         private Keys subtractKey = Keys.Space | Keys.Shift;
 
+        private bool _suppressMethodCBEvent = false;
+        private bool _suppressGenerationCBEvent = false;
+
+        private readonly List<string> _allMethods = new List<string>
+        {
+            "Random Encounter",
+            "Soft Reset",
+            "Breeding",
+            "Masuda Method",
+            "Radar Chaining",
+            "Chain Fishing",
+            "Dex Nav",
+            "Horde Encounter",
+            "SOS Battle"
+        };
         public Form1()
         {
             InitializeComponent();
@@ -53,6 +68,9 @@ namespace PokemonCounter
             methodCB.SelectedIndexChanged += methodCB_SelectedIndexChanged;
             topmostBox.CheckedChanged += topmostBox_CheckedChanged;
 
+            pokemonCB.SelectedIndexChanged += pokemonCB_SelectedIndexChanged;
+            formesCB.SelectedIndexChanged += formsCB_SelectedIndexChanged;
+
             addKeybind.KeyDown += addKeybind_KeyDown;
             subtractKeybind.KeyDown += subtractKeybind_KeyDown;
         }
@@ -61,18 +79,22 @@ namespace PokemonCounter
         {
             _pokemonSpritePaths = PokemonSpriteMapper.LoadPokemonSprites();
             pokemonCB.Items.Clear();
-            pokemonCB.Items.AddRange(_pokemonSpritePaths.Keys.ToArray());
+            pokemonCB.DataSource = _pokemonSpritePaths.Keys.ToList();
             pokemonCB.DropDownStyle = ComboBoxStyle.DropDown;
             pokemonCB.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
             pokemonCB.AutoCompleteSource = AutoCompleteSource.ListItems;
 
             generationCB.SelectedIndexChanged -= generationCB_SelectedIndexChanged;
-            generationCB.SelectedItem = null;
-            methodCB.SelectedItem = null;
             generationCB.SelectedIndexChanged += generationCB_SelectedIndexChanged;
+
+            generationCB.SelectedIndex = 0;
+            methodCB.SelectedIndex = 0;
 
             _encounterCount = 0;
             InitializeStatsTable("");
+
+            generationCB_SelectedIndexChanged(generationCB, EventArgs.Empty);
+            methodCB_SelectedIndexChanged(methodCB, EventArgs.Empty);
 
             addKey = Keys.Space;
             subtractKey = Keys.Shift | Keys.Space;
@@ -136,41 +158,35 @@ namespace PokemonCounter
 
         private void pokemonCB_SelectedIndexChanged(object sender, EventArgs e)
         {
-            string selectedName = pokemonCB.SelectedItem as string;
-            pokemonLabel.Text = selectedName ?? string.Empty;
+            string selectedPokemon = pokemonCB.SelectedItem as string;
+            if (selectedPokemon != null && _pokemonSpritePaths.TryGetValue(selectedPokemon, out var formsDict))
+            {
+                formesCB.DataSource = formsDict.Keys.ToList();
+                formesCB.SelectedIndex = 0;
+
+                formesCB.Enabled = formsDict.Count > 1;
+
+            }
+        }
+
+        private void formsCB_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            string selectedPokemon = pokemonCB.SelectedItem as string;
+            string selectedForm = formesCB.SelectedItem as string;
+
+            pokemonLabel.Text = selectedPokemon ?? string.Empty;
             pokemonLabel.Left = (HuntTab.ClientSize.Width - pokemonLabel.Width) / 2;
 
-            if (selectedName == null) return;
-
-            if (_pokemonSpritePaths.TryGetValue(selectedName, out var spritePath) &&
-                !string.IsNullOrEmpty(spritePath) && File.Exists(spritePath))
+            if (selectedPokemon != null && selectedForm != null &&
+                _pokemonSpritePaths.TryGetValue(selectedPokemon, out var formsDict) &&
+                formsDict.TryGetValue(selectedForm, out var spritePath) &&
+                !string.IsNullOrEmpty(spritePath))
             {
-                if (pictureBox1.Image != null)
-                {
-                    pictureBox1.Image.Dispose();
-                    pictureBox1.Image = null;
-                }
-
-                try
-                {
-                    Image img = Image.FromFile(spritePath);
-                    pictureBox1.Image = img;
-                    pictureBox1.SizeMode = PictureBoxSizeMode.Zoom;
-
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"Failed to load image: {ex.Message}");
-                    pictureBox1.Image = null;
-                }
+                pictureBox1.Image = Image.FromFile(spritePath);
+                pictureBox1.SizeMode = PictureBoxSizeMode.Zoom;
             }
             else
             {
-                if (pictureBox1.Image != null)
-                {
-                    pictureBox1.Image.Dispose();
-                    pictureBox1.Image = null;
-                }
                 pictureBox1.Image = null;
             }
         }
@@ -195,8 +211,10 @@ namespace PokemonCounter
 
         private void generationCB_SelectedIndexChanged(object sender, EventArgs e)
         {
-            string selectedGen = generationCB.SelectedItem as string;
 
+            if (_suppressGenerationCBEvent) return;
+
+            string selectedGen = generationCB.SelectedItem as string;
             if (_generationValueLabel == null)
                 return;
 
@@ -205,6 +223,8 @@ namespace PokemonCounter
             int genNumber = 0;
             if (selectedGen != null && selectedGen.StartsWith("Gen ") && int.TryParse(selectedGen.Substring(4), out genNumber))
             {
+                UpdateMethodCBItems(genNumber);
+
                 bool enableShinyCharm = genNumber >= 5;
                 shinyCharmYesRadioButton.Enabled = enableShinyCharm;
                 shinyCharmNoRadioButton.Enabled = enableShinyCharm;
@@ -213,7 +233,6 @@ namespace PokemonCounter
                     shinyCharmNoRadioButton.Checked = true;
                 }
             }
-
             UpdateOddsLabel();
         }
 
@@ -320,6 +339,48 @@ namespace PokemonCounter
                 return true;
             }
             return base.ProcessCmdKey(ref msg, keyData);
+        }
+
+        private void UpdateMethodCBItems(int genNumber)
+        {
+            string prevSelection = methodCB.SelectedItem as string;
+            methodCB.SelectedIndexChanged -= methodCB_SelectedIndexChanged;
+
+            methodCB.Items.Clear();
+
+            foreach (var method in _allMethods)
+            {
+                if (method == "Masuda Method" && genNumber < 5)
+                    continue; 
+                if(method == "Radar Chaining" && (genNumber != 4 || genNumber !=6))
+                    continue;
+                if ((method == "Dex Nav" || method == "Horde Encounter" || method == "Chain Fishing") && genNumber != 6)
+                    continue;
+                if (method == "SOS Battle" && genNumber != 7)
+                    continue;
+                methodCB.Items.Add(method);
+            }
+
+            if (prevSelection != null && methodCB.Items.Contains(prevSelection))
+                methodCB.SelectedItem = prevSelection;
+            else
+                methodCB.SelectedIndex = 0;
+
+            methodCB.SelectedIndexChanged += methodCB_SelectedIndexChanged;
+        }
+
+        private class ComboBoxItem
+        {
+            public string Text { get; }
+            public bool Enabled { get; }
+
+            public ComboBoxItem(string text, bool enabled)
+            {
+                Text = text;
+                Enabled = enabled;
+            }
+
+            public override string ToString() => Text;
         }
     }
 }

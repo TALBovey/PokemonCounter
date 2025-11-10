@@ -29,7 +29,11 @@
         private void InitializeComponent()
         {
             SettingsTab = new TabPage();
+            formesCB = new ComboBox();
+            formesLabel = new Label();
+            shinyCharmNoRadioButton = new RadioButton();
             subtractKBLabel = new Label();
+            shinyCharmYesRadioButton = new RadioButton();
             addKBLabel = new Label();
             subtractKeybind = new TextBox();
             addKeybind = new TextBox();
@@ -39,9 +43,6 @@
             resetButton = new Button();
             pokemonCB = new ComboBox();
             targetLabel = new Label();
-            shinyCharmYN = new GroupBox();
-            shinyCharmNoRadioButton = new RadioButton();
-            shinyCharmYesRadioButton = new RadioButton();
             shinycharmLabel = new Label();
             generationCB = new ComboBox();
             generationLabel = new Label();
@@ -55,7 +56,6 @@
             addButton = new Button();
             tabControl1 = new TabControl();
             SettingsTab.SuspendLayout();
-            shinyCharmYN.SuspendLayout();
             HuntTab.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             tabControl1.SuspendLayout();
@@ -63,7 +63,11 @@
             // 
             // SettingsTab
             // 
+            SettingsTab.Controls.Add(formesCB);
+            SettingsTab.Controls.Add(formesLabel);
+            SettingsTab.Controls.Add(shinyCharmNoRadioButton);
             SettingsTab.Controls.Add(subtractKBLabel);
+            SettingsTab.Controls.Add(shinyCharmYesRadioButton);
             SettingsTab.Controls.Add(addKBLabel);
             SettingsTab.Controls.Add(subtractKeybind);
             SettingsTab.Controls.Add(addKeybind);
@@ -73,7 +77,6 @@
             SettingsTab.Controls.Add(resetButton);
             SettingsTab.Controls.Add(pokemonCB);
             SettingsTab.Controls.Add(targetLabel);
-            SettingsTab.Controls.Add(shinyCharmYN);
             SettingsTab.Controls.Add(shinycharmLabel);
             SettingsTab.Controls.Add(generationCB);
             SettingsTab.Controls.Add(generationLabel);
@@ -85,6 +88,34 @@
             SettingsTab.Text = "Settings";
             SettingsTab.UseVisualStyleBackColor = true;
             // 
+            // formesCB
+            // 
+            formesCB.FormattingEnabled = true;
+            formesCB.Location = new Point(209, 87);
+            formesCB.Name = "formesCB";
+            formesCB.Size = new Size(121, 23);
+            formesCB.TabIndex = 20;
+            // 
+            // formesLabel
+            // 
+            formesLabel.AutoSize = true;
+            formesLabel.Location = new Point(220, 69);
+            formesLabel.Name = "formesLabel";
+            formesLabel.Size = new Size(98, 15);
+            formesLabel.TabIndex = 19;
+            formesLabel.Text = "Pokemon Forme:";
+            // 
+            // shinyCharmNoRadioButton
+            // 
+            shinyCharmNoRadioButton.AutoSize = true;
+            shinyCharmNoRadioButton.Location = new Point(289, 36);
+            shinyCharmNoRadioButton.Name = "shinyCharmNoRadioButton";
+            shinyCharmNoRadioButton.Size = new Size(41, 19);
+            shinyCharmNoRadioButton.TabIndex = 5;
+            shinyCharmNoRadioButton.TabStop = true;
+            shinyCharmNoRadioButton.Text = "No";
+            shinyCharmNoRadioButton.UseVisualStyleBackColor = true;
+            // 
             // subtractKBLabel
             // 
             subtractKBLabel.AutoSize = true;
@@ -93,6 +124,17 @@
             subtractKBLabel.Size = new Size(139, 15);
             subtractKBLabel.TabIndex = 18;
             subtractKBLabel.Text = "Subtract Button Keybind:";
+            // 
+            // shinyCharmYesRadioButton
+            // 
+            shinyCharmYesRadioButton.AutoSize = true;
+            shinyCharmYesRadioButton.Location = new Point(209, 36);
+            shinyCharmYesRadioButton.Name = "shinyCharmYesRadioButton";
+            shinyCharmYesRadioButton.Size = new Size(42, 19);
+            shinyCharmYesRadioButton.TabIndex = 4;
+            shinyCharmYesRadioButton.TabStop = true;
+            shinyCharmYesRadioButton.Text = "Yes";
+            shinyCharmYesRadioButton.UseVisualStyleBackColor = true;
             // 
             // addKBLabel
             // 
@@ -133,16 +175,16 @@
             // methodCB
             // 
             methodCB.FormattingEnabled = true;
-            methodCB.Location = new Point(117, 218);
+            methodCB.Location = new Point(112, 169);
             methodCB.Name = "methodCB";
-            methodCB.Size = new Size(121, 23);
+            methodCB.Size = new Size(130, 23);
             methodCB.TabIndex = 13;
             methodCB.SelectedIndexChanged += methodCB_SelectedIndexChanged;
             // 
             // label1
             // 
             label1.AutoSize = true;
-            label1.Location = new Point(128, 200);
+            label1.Location = new Point(128, 151);
             label1.Name = "label1";
             label1.Size = new Size(99, 15);
             label1.TabIndex = 11;
@@ -150,7 +192,7 @@
             // 
             // resetButton
             // 
-            resetButton.Location = new Point(140, 255);
+            resetButton.Location = new Point(140, 206);
             resetButton.Name = "resetButton";
             resetButton.Size = new Size(75, 23);
             resetButton.TabIndex = 10;
@@ -161,7 +203,7 @@
             // pokemonCB
             // 
             pokemonCB.FormattingEnabled = true;
-            pokemonCB.Location = new Point(117, 78);
+            pokemonCB.Location = new Point(21, 87);
             pokemonCB.Name = "pokemonCB";
             pokemonCB.Size = new Size(121, 23);
             pokemonCB.TabIndex = 8;
@@ -170,48 +212,16 @@
             // targetLabel
             // 
             targetLabel.AutoSize = true;
-            targetLabel.Location = new Point(128, 60);
+            targetLabel.Location = new Point(32, 69);
             targetLabel.Name = "targetLabel";
             targetLabel.Size = new Size(96, 15);
             targetLabel.TabIndex = 7;
             targetLabel.Text = "Target Pokemon:";
             // 
-            // shinyCharmYN
-            // 
-            shinyCharmYN.Controls.Add(shinyCharmNoRadioButton);
-            shinyCharmYN.Controls.Add(shinyCharmYesRadioButton);
-            shinyCharmYN.Location = new Point(73, 126);
-            shinyCharmYN.Name = "shinyCharmYN";
-            shinyCharmYN.Size = new Size(209, 58);
-            shinyCharmYN.TabIndex = 6;
-            shinyCharmYN.TabStop = false;
-            // 
-            // shinyCharmNoRadioButton
-            // 
-            shinyCharmNoRadioButton.AutoSize = true;
-            shinyCharmNoRadioButton.Location = new Point(134, 22);
-            shinyCharmNoRadioButton.Name = "shinyCharmNoRadioButton";
-            shinyCharmNoRadioButton.Size = new Size(41, 19);
-            shinyCharmNoRadioButton.TabIndex = 5;
-            shinyCharmNoRadioButton.TabStop = true;
-            shinyCharmNoRadioButton.Text = "No";
-            shinyCharmNoRadioButton.UseVisualStyleBackColor = true;
-            // 
-            // shinyCharmYesRadioButton
-            // 
-            shinyCharmYesRadioButton.AutoSize = true;
-            shinyCharmYesRadioButton.Location = new Point(34, 22);
-            shinyCharmYesRadioButton.Name = "shinyCharmYesRadioButton";
-            shinyCharmYesRadioButton.Size = new Size(42, 19);
-            shinyCharmYesRadioButton.TabIndex = 4;
-            shinyCharmYesRadioButton.TabStop = true;
-            shinyCharmYesRadioButton.Text = "Yes";
-            shinyCharmYesRadioButton.UseVisualStyleBackColor = true;
-            // 
             // shinycharmLabel
             // 
             shinycharmLabel.AutoSize = true;
-            shinycharmLabel.Location = new Point(138, 108);
+            shinycharmLabel.Location = new Point(229, 14);
             shinycharmLabel.Name = "shinycharmLabel";
             shinycharmLabel.Size = new Size(78, 15);
             shinycharmLabel.TabIndex = 3;
@@ -220,7 +230,7 @@
             // generationCB
             // 
             generationCB.FormattingEnabled = true;
-            generationCB.Location = new Point(117, 32);
+            generationCB.Location = new Point(21, 32);
             generationCB.Name = "generationCB";
             generationCB.Size = new Size(121, 23);
             generationCB.TabIndex = 2;
@@ -229,7 +239,7 @@
             // generationLabel
             // 
             generationLabel.AutoSize = true;
-            generationLabel.Location = new Point(143, 14);
+            generationLabel.Location = new Point(47, 14);
             generationLabel.Name = "generationLabel";
             generationLabel.Size = new Size(68, 15);
             generationLabel.TabIndex = 1;
@@ -288,9 +298,10 @@
             // 
             pokemonLabel.Anchor = AnchorStyles.None;
             pokemonLabel.AutoSize = true;
+            pokemonLabel.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             pokemonLabel.Location = new Point(177, 9);
             pokemonLabel.Name = "pokemonLabel";
-            pokemonLabel.Size = new Size(0, 15);
+            pokemonLabel.Size = new Size(0, 21);
             pokemonLabel.TabIndex = 5;
             pokemonLabel.TextAlign = ContentAlignment.MiddleCenter;
             // 
@@ -343,8 +354,6 @@
             Text = "Bovey's Pokemon Counter";
             SettingsTab.ResumeLayout(false);
             SettingsTab.PerformLayout();
-            shinyCharmYN.ResumeLayout(false);
-            shinyCharmYN.PerformLayout();
             HuntTab.ResumeLayout(false);
             HuntTab.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
@@ -360,7 +369,6 @@
         private Button resetButton;
         private ComboBox pokemonCB;
         private Label targetLabel;
-        private GroupBox shinyCharmYN;
         private RadioButton shinyCharmNoRadioButton;
         private RadioButton shinyCharmYesRadioButton;
         private Label shinycharmLabel;
@@ -380,5 +388,7 @@
         private TextBox addKeybind;
         private Label keybindLabelA;
         private Label keybindLabelS;
+        private ComboBox formesCB;
+        private Label formesLabel;
     }
 }
